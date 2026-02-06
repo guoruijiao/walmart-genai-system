@@ -12,9 +12,11 @@ This system answers retail questions (e.g. return policy, delivery, store info) 
 The goal is to demonstrate **system-level GenAI design**, not a chatbot demo.
 
 ## Architecture
-
-Client → FastAPI → Core Generation  
-→ Retrieval Layer (RAG) → LLM (OpenAI Responses API)
+- Client: curl/Swagger/UI calls /query
+- Orchestrator: request validation + routing + schema enforcement (FastAPI + core/generate)
+- Retriever: chunk → embed → vector search → top-k context
+- LLM: OpenAI Responses API (model-agnostic design)
+- Eval/Logging: store prompts/outputs + offline eval set + failure modes. 
 
 LLMs are treated as **reasoning engines**, while factual correctness comes from retrieval.
 
@@ -31,15 +33,19 @@ All responses follow a structured schema including:
 This enables downstream automation and evaluation.
 
 ## Project Structure 
-src/walmart_genai/
-api/     # FastAPI endpoints
-core/    # LLM interface, schema, generation logic
-rag/     # Retrieval components
-scripts/   # Local testing utilities
-data/docs/ # Domain documents 
+src/walmart_genai/. 
+api/     # FastAPI endpoints. 
+core/    # LLM interface, schema, generation logic. 
+rag/     # Retrieval components. 
+scripts/   # Local testing utilities. 
+data/docs/ # Domain documents. 
 
 ## Why this project
 This repo focuses on:
 - grounding and auditability over free-form text
 - explicit interfaces over prompt-only logic
-- extensibility to agents, evaluation, and open-source models
+- extensibility to agents, evaluation, and open-source models 
+
+## Use Cases
+- Use Case A (Customer/Ops Q&A): policy/product/delivery Q&A with citations + next_action
+- Use Case B (Internal Decision Support): summarize reviews/tickets/policies → risks + recommendations + next_action
